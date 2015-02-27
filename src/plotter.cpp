@@ -20,14 +20,13 @@
 
 #include "plotter.h"
 
-Plotter::Plotter() {
+Plotter::Plotter(const unsigned int &_width, const unsigned int &_height) {
   this->scheme = new ColorScheme(0, 10);
 
-  this->width = 1000;
-  this->height = 500;
-  this->add_height = 200;
+  this->width = _width;
+  this->height = _height;
 
-  this->surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, this->width, this->height + this->add_height);
+  this->surface = cairo_image_surface_create (CAIRO_FORMAT_ARGB32, this->width, this->height);
   this->cr = cairo_create (this->surface);
 
   this->set_background(Color(255, 252, 213));
@@ -38,7 +37,7 @@ Plotter::Plotter() {
  */
 void Plotter::set_background(const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
-  cairo_rectangle(this->cr, 0, 0, this->width, this->height + add_height);
+  cairo_rectangle(this->cr, 0, 0, this->width, this->height);
   cairo_fill(this->cr);
 }
 

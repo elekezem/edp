@@ -62,7 +62,7 @@ private:
   unsigned int width, height, add_height;
   ColorScheme *scheme;
 public:
-  Plotter();
+  Plotter(const unsigned int &_width, const unsigned int &_height);
   void set_background(const Color &_color);
   void write(const char* filename);
   void draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop, 
