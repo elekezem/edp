@@ -27,6 +27,8 @@ private:
 public:
   Vector();
   Vector(float x, float y, float z);
+  float operator[](const unsigned int &i);
+  const float& operator[](const unsigned int &i) const;
 private:
 };
 
@@ -55,5 +57,5 @@ private:
 public:
   Plane(const Vector &r, const Vector &n);
 private:
-
+  void parametrize();
 };

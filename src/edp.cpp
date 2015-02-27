@@ -23,5 +23,13 @@
 
 int main() {
   std::cout << "Running EDP" << std::endl;
+
+  // assuming a square box of 10x10x10 A, construct a plane given by
+  Vector r(5.0, 5.0, 5.0);
+  // and a direction
+  Vector n(0.0, 1.0, 0.0);
+  // that constructs a plane
+  Plane p(r, n);
+
   return 0;
 }

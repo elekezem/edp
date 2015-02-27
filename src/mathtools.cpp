@@ -39,6 +39,20 @@ Vector::Vector(float x, float y, float z) {
 }
 
 /*
+ * Allocator method to place a value in the Vector
+ */
+float Vector::operator[](const unsigned int &i) {
+  return this->r[i];
+}
+
+/*
+ * Allocator method to grab a value from the Vector
+ */
+const float& Vector::operator[](const unsigned int &i) const {
+  return this->r[i];
+}
+
+/*
  * Default matrix constructor
  */
 Matrix::Matrix() {
@@ -76,4 +90,8 @@ const float* Matrix::operator[](const unsigned int &i) const {
 Plane::Plane(const Vector &r, const Vector &n) {
   this->origin = r;
   this->normal = n;
+}
+
+void Plane::parametrize() {
+
 }
