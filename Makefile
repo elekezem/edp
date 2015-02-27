@@ -15,7 +15,7 @@ SRCDIR = ./src
 CFLAGS += -I$(INCDIR) -I$(INCDIR_LAMMPS) -I$(SRCDIR)
  
 # add here the source files for the compilation
-SOURCES = edp.cpp mathtools.cpp plotter.cpp
+SOURCES = edp.cpp mathtools.cpp plotter.cpp unitcell.cpp plotroutines.cpp
  
 # create the obj variable by substituting the extension of the sources
 # and adding a path

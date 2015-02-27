@@ -1,5 +1,5 @@
 /**************************************************************************
- *   mathtools.h                                                          *
+ *   plotroutines.h                                                       *
  *                                                                        *
  *   EDP                                                                  *
  *                                                                        *
@@ -18,49 +18,12 @@
  *                                                                        *
  **************************************************************************/
 
-#ifndef _MATHTOOLS_H
-#define _MATHTOOLS_H
+#ifndef _PLOTROUTINES_H
+#define _PLOTROUTINES_H
 
-/*
- * Vector class in 3D space
- */
-class Vector {
-private:
-  float r[3];
-public:
-  Vector();
-  Vector(float x, float y, float z);
-  float operator[](const unsigned int &i);
-  const float& operator[](const unsigned int &i) const;
-private:
-};
+#include "unitcell.h"
+#include "plotter.h"
 
-/*
- * 3x3 Matrix class
- */
-class Matrix {
-private:
-  float* r[3];
-public:
-  Matrix();
-  ~Matrix();
-  void inverse();
-  float* operator[](const unsigned int &i);
-  const float* operator[](const unsigned int &i) const;
-private:
-};
+void plot_unitcell_unfold(const Unitcell &uc, const Plotter &plt);
 
-/*
- * Plane class
- */
-class Plane {
-private:
-  Vector origin; // origin of the plane
-  Vector normal; // normal vector
-public:
-  Plane(const Vector &r, const Vector &n);
-private:
-  void parametrize();
-};
-
-#endif //_MATHTOOLS_H
+#endif //_PLOTROUTINES_H
