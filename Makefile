@@ -1,5 +1,5 @@
 # set compiler and compile options
-EXEC = ai-optimizer
+EXEC = edp
 CXX = g++                                # use the GNU C++ compiler
 OPTS = -O3 -Wall -g -Wno-write-strings   # use some optimization, report all warnings and enable debugging
 CFLAGS = $(OPTS)                         # add compile flags
@@ -15,7 +15,7 @@ SRCDIR = ./src
 CFLAGS += -I$(INCDIR) -I$(INCDIR_LAMMPS) -I$(SRCDIR)
  
 # add here the source files for the compilation
-SOURCES = edp.cpp
+SOURCES = edp.cpp mathtools.cpp
  
 # create the obj variable by substituting the extension of the sources
 # and adding a path
