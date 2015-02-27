@@ -33,12 +33,19 @@ Plotter::Plotter() {
   this->set_background(Color(255, 252, 213));
 }
 
+/*
+ * Sets the background color of the image
+ */
 void Plotter::set_background(const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_rectangle(this->cr, 0, 0, this->width, this->height + add_height);
   cairo_fill(this->cr);
 }
 
+/*
+ * Draws a line. The position xstop and ystop are the ending positions of the line
+ * and *not* the direction of the line.
+ */
 void Plotter::draw_line(float xstart, float ystart, float xstop, float ystop, 
                         const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
@@ -48,6 +55,9 @@ void Plotter::draw_line(float xstart, float ystart, float xstop, float ystop,
   cairo_stroke(this->cr);
 }
 
+/*
+ * Create a filled rectangle. That is a rectangle without a border.
+ */
 void Plotter::draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop, 
                         const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
@@ -55,6 +65,9 @@ void Plotter::draw_filled_rectangle(float xstart, float ystart, float xstop, flo
   cairo_fill(this->cr);
 }
 
+/*
+ * Create an empty rectangle. In other words, just the border of the rectangle.
+ */
 void Plotter::draw_empty_rectangle(float xstart, float ystart, float xstop, float ystop, 
                         const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
@@ -63,6 +76,9 @@ void Plotter::draw_empty_rectangle(float xstart, float ystart, float xstop, floa
   cairo_stroke(this->cr);
 }
 
+/*
+ * Create a filled circle. That is a circle without a border.
+ */
 void Plotter::draw_filled_circle(float cx, float cy, float radius, 
                           const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
@@ -70,6 +86,9 @@ void Plotter::draw_filled_circle(float cx, float cy, float radius,
   cairo_fill(this->cr);
 }
 
+/*
+ * Create an empty circle. In other words, just the border of the circle.
+ */
 void Plotter::draw_empty_circle(float cx, float cy, float radius, 
                           const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
@@ -106,7 +125,6 @@ ColorScheme::ColorScheme(const double &_low, const double &_high) {
 }
 
 /**
- * Method
  *
  * Construct a colorscheme. The color values are here hardcoded and extracted from:
  * http://colorbrewer2.org/
@@ -137,7 +155,6 @@ void ColorScheme::construct_scheme() {
 }
 
 /**
- * Method
  *
  * Convert the colorscheme set in hexidecimal RGB to integer RGB
  *
@@ -149,7 +166,6 @@ void ColorScheme::convert_scheme() {
 }
 
 /**
- * Method
  *
  * Convert string of hexidecimal RGB values to three integers
  *
@@ -161,7 +177,6 @@ Color ColorScheme::rgb2color(const std::string &_hex) {
 }
 
 /**
- * Method
  *
  * Return a color by interpolation by supplying a value
  *
@@ -188,7 +203,6 @@ Color ColorScheme::get_color(const double &_value) {
 }
 
 /**
- * Method
  *
  * Convert a single hexidecimal value to an integer
  *
@@ -204,9 +218,8 @@ unsigned int ColorScheme::hex2int(const std::string &_hex) {
 }
 
 /**
- * Constructor
  *
- * Color
+ * Color constructor
  *
  */
 Color::Color(unsigned int _r, unsigned int _g, unsigned int _b) {
@@ -216,7 +229,6 @@ Color::Color(unsigned int _r, unsigned int _g, unsigned int _b) {
 }
 
 /**
- * Method
  *
  * Return the integer value for red (divide by 255 because we want on the [0,1] interval)
  *
@@ -226,7 +238,6 @@ float Color::get_r() const {
 }
 
 /**
- * Method
  *
  * Return the integer value for green (divide by 255 because we want on the [0,1] interval)
  *
@@ -236,7 +247,6 @@ float Color::get_g() const {
 }
 
 /**
- * Method
  *
  * Return the integer value for blue (divide by 255 because we want on the [0,1] interval)
  *
