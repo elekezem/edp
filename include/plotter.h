@@ -59,7 +59,7 @@ class Plotter {
 private:
   cairo_t *cr;
   cairo_surface_t *surface;
-  unsigned int width, height, add_height;
+  unsigned int width, height;
   ColorScheme *scheme;
 public:
   Plotter(const unsigned int &_width, const unsigned int &_height);

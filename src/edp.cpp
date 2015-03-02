@@ -20,16 +20,24 @@
 
 #include <iostream>
 #include "mathtools.h"
+#include "unitcell.h"
 
 int main() {
   std::cout << "Running EDP" << std::endl;
 
-  // assuming a square box of 10x10x10 A, construct a plane given by
-  Vector r(5.0, 5.0, 5.0);
-  // and a direction
-  Vector n(0.0, 1.0, 0.0);
-  // that constructs a plane
+  // create a canvas
+  Plotter plt(1000, 1000);
+
+  // assuming a unit cell of 10x10x10
+  Unitcell u(Vector(10,0,0), Vector(0,10,0), Vector(0,0,10));
+
+  Vector r(5.0, 5.0, 5.0); 	// construction position
+  Vector n(0.0, 1.0, 0.0);	// construction normal
   Plane p(r, n);
+
+  plot_unitcell_unfold(plt, u);
+
+  plt.write("test.png");
 
   return 0;
 }

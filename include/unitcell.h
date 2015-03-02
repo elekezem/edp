@@ -22,13 +22,18 @@
 #define _UNITCELL_H
 
 #include "mathtools.h"
+#include "plotter.h"
 
 class Unitcell {
 private:
   Matrix m;
 public:
-  Unitcell();
+  Unitcell(const Vector &x, const Vector &y, const Vector &z);
+  float* operator[](const unsigned int &i);
+  const float* operator[](const unsigned int &i) const;
 private:
 };
+
+void plot_unitcell_unfold(Plotter &plt, const Unitcell &u);
 
 #endif //_UNITCELL_H
