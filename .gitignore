@@ -28,3 +28,5 @@
 *.app
 
 bin/edp
+CHGCAR
+test.png
