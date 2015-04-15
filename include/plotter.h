@@ -46,7 +46,7 @@ private:
   double low, high;
 public:
   ColorScheme(const double &_low, const double &_high);
-  Color get_color(const double &_value);
+  Color get_color(const double &_value, bool logarithmic);
 private:
   void construct_scheme();
   void convert_scheme();

@@ -180,19 +180,19 @@ Color ColorScheme::rgb2color(const std::string &_hex) {
  * Return a color by interpolation by supplying a value
  *
  */
-Color ColorScheme::get_color(const double &_value) {
-  if(_value > this->high) {
+Color ColorScheme::get_color(const double &_value, bool logarithmic) {
+  if((logarithmic ? log(_value) : _value) > this->high) {
     return this->colors.back();
   }
-  if(_value < this->low) {
+  if((logarithmic ? log(_value) : _value) < this->low) {
     return this->colors.front();
   }
 
   float binsize = ((this->high - this->low)/(double)(this->colors.size()-1));
-  unsigned int bin = floor((_value - this->low) / binsize);
+  unsigned int bin = floor(((logarithmic ? log(_value) : _value) - this->low) / binsize);
 
   // interpolate between the two colors
-  float residual = (_value - this->low - (float)bin * binsize) / binsize;
+  float residual = ((logarithmic ? log(_value) : _value) - this->low - (float)bin * binsize) / binsize;
 
   float r = residual * this->colors[bin+1].get_r() + (1.0-residual) * this->colors[bin].get_r();
   float g = residual * this->colors[bin+1].get_g() + (1.0-residual) * this->colors[bin].get_g();

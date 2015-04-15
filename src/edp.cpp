@@ -36,11 +36,11 @@ int main() {
 //sf.get_value_interp(5.021,5.021,5.021);
 
   // create a canvas
-  ColorScheme scheme(0,10000);
+  ColorScheme scheme(-10,10);
   Plotter plt(1000, 1000);
-  for(float x=0; x<9.9; x+=0.01) {
-    for(float y=0; y<9.9; y+=0.01) {
-      plt.draw_filled_rectangle(x * 100, y * 100, 1, 1, scheme.get_color(sf.get_value_interp(x,5,y)));
+  for(float x=0; x<10; x+=0.01) {
+    for(float y=0; y<10; y+=0.01) {
+      plt.draw_filled_rectangle(x * 100, y * 100, 1, 1, scheme.get_color(sf.get_value_interp(x,5,y), true));
     }
   }
   plt.write("test.png");

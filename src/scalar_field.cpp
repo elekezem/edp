@@ -76,9 +76,9 @@ XYZ ScalarField::realspace_to_grid(const double &i,
   r.y = imat[1][0] * i + imat[1][1] * j + imat[1][2] * k;
   r.z = imat[2][0] * i + imat[2][1] * j + imat[2][2] * k;
 
-  r.x *= float(this->grid_dimensions[0]);
-  r.y *= float(this->grid_dimensions[1]);
-  r.z *= float(this->grid_dimensions[2]);
+  r.x *= float(this->grid_dimensions[0]-1);
+  r.y *= float(this->grid_dimensions[1]-1);
+  r.z *= float(this->grid_dimensions[2]-1);
 
   return r;
 }
@@ -296,21 +296,31 @@ float ScalarField::get_value_interp(const float &x, const float &y, const float 
   float z0 = floor(r.z);
   float z1 = ceil(r.z);
 
-  float c00 = this->get_value(x0, y0, z0) * (1-xd) +
-              this->get_value(x1, y0, z0) * (1-xd);
-  float c10 = this->get_value(x0, y1, z0) * (1-xd) +
-              this->get_value(x1, y1, z0) * (1-xd);
-  float c01 = this->get_value(x0, y0, z1) * (1-xd) +
-              this->get_value(x1, y0, z1) * (1-xd);
-  float c11 = this->get_value(x0, y1, z1) * (1-xd) +
-              this->get_value(x1, y1, z1) * (1-xd);
+  return
+  this->get_value(x0, y0, z0) * (1.0 - xd) * (1.0 - yd) * (1.0 - zd) +
+  this->get_value(x1, y0, z0) * xd         * (1.0 - yd) * (1.0 - zd) +
+  this->get_value(x0, y1, z0) * (1.0 - xd) * yd         * (1.0 - zd) +
+  this->get_value(x0, y0, z1) * (1.0 - xd) * (1.0 - yd) * zd         +
+  this->get_value(x1, y0, z1) * xd         * (1.0 - yd) * zd         +
+  this->get_value(x0, y1, z1) * (1.0 - xd) * yd         * zd         +
+  this->get_value(x1, y1, z0) * xd         * yd         * (1.0 - zd) +
+  this->get_value(x1, y1, z1) * xd         * yd         * zd;
 
-  float c0 = c00 * (1 - yd) + c10 * yd;
-  float c1 = c01 * (1 - yd) + c11 * yd;
+  // float c00 = this->get_value(x0, y0, z0) * (1.0-xd) +
+  //             this->get_value(x1, y0, z0) * (1.0-xd);
+  // float c10 = this->get_value(x0, y1, z0) * (1.0-xd) +
+  //             this->get_value(x1, y1, z0) * (1.0-xd);
+  // float c01 = this->get_value(x0, y0, z1) * (1.0-xd) +
+  //             this->get_value(x1, y0, z1) * (1.0-xd);
+  // float c11 = this->get_value(x0, y1, z1) * (1.0-xd) +
+  //             this->get_value(x1, y1, z1) * (1.0-xd);
 
-  float c = c0 * (1 - zd) + c1 * zd;
+  // float c0 = c00 * (1.0 - yd) + c10 * yd;
+  // float c1 = c01 * (1.0 - yd) + c11 * yd;
 
-  return c;
+  // float c = c0 * (1.0 - zd) + c1 * zd;
+
+  // return c;
 }
 
 float ScalarField::get_max_direction(const unsigned int &dim) {
