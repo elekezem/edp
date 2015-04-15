@@ -27,6 +27,6 @@
 *.out
 *.app
 
-bin/edp
+bin/*
 CHGCAR
 test.png

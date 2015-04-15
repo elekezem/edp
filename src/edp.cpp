@@ -33,8 +33,8 @@
 
 #include <iostream>
 #include "mathtools.h"
-#include "unitcell.h"
 #include "scalar_field.h"
+#include "plotter.h"
 
 int main() {
   std::cout << "Running EDP" << std::endl;
@@ -51,9 +51,6 @@ int main() {
     }
   }
   plt.write("test.png");
-
-  // // assuming a unit cell of 10x10x10
-  // Unitcell u(Vector(10,0,0), Vector(0,10,0), Vector(0,0,10));
 
   // Vector r(5.0, 5.0, 5.0); 	// construction position
   // Vector n(0.0, 1.0, 0.0);	// construction normal
