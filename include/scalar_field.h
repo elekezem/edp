@@ -1,21 +1,20 @@
 /**************************************************************************
- *   vasp_parser.h                                                        *
+ *   scalar_field.h                                                       *
  *                                                                        *
- *   ISOTRON                                                              *
+ *   EDP                                                                  *
  *                                                                        *
- *   This program is free software; you can redistribute it and/or modify *
- *   it under the terms of the GNU General Public License as published by *
- *   the Free Software Foundation, version 2                              *
+ *   Authors: Ivo Filot                                                   *
+ *            Bart Zijlstra                                               *
+ *            Emiel Hensen                                                *
  *                                                                        *
- *   This program is distributed in the hope that it will be useful, but  *
- *   WITHOUT ANY WARRANTY; without even the implied warranty of           *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU    *
- *   General Public License for more details.                             *
+ *   (C) Copyright 2015 Inorganic Materials Chemistry                     *
  *                                                                        *
- *   You should have received a copy of the GNU General Public License    *
- *   along with this program; if not, write to the Free Software          *
- *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA            *
- *   02110-1301, USA.                                                     *
+ *   This is a legal licensing agreement (Agreement) between              *
+ *   You (an individual or single legal entity) and                       *
+ *   Inorganic Materials Chemistry (IMC) governing the in-house use       *
+ *   of the EDP software product (Software).                              *
+ *   By downloading, installing, or using Software, You agree to be bound *
+ *   by the license terms as given in the LICENSE file                    *
  *                                                                        *
  **************************************************************************/
 
@@ -34,46 +33,61 @@
 
 class ScalarField{
 private:
-	std::string filename;
-	double scalar;
-	double mat[3][3];
-	double imat[3][3];
+    std::string filename;
+    double scalar;
+    double mat[3][3];   // matrix dimensions
+    double imat[3][3];  // inverse of matrix
 
-	unsigned int grid_dimensions[3];
-	std::vector<unsigned int> nrat;
-	std::string gridline;
-	float* gridptr; // grid to first pos of float array
-	float* gridptr2; // grid to first pos of float array
-	unsigned int gridsize;
+    unsigned int grid_dimensions[3];
+    std::vector<unsigned int> nrat;
+    std::string gridline;
+    float* gridptr;  // grid to first pos of float array
+    float* gridptr2; // grid to first pos of float array
+    unsigned int gridsize;
 
 public:
-	ScalarField(const std::string &_filename);
-	void output() const;
-	void copy_grid_dimensions(unsigned int _grid_dimensions[]);
-	const float& get_value(const unsigned int i,
+    ScalarField(const std::string &_filename);
+    void output() const;
+    ~ScalarField();
+
+public:
+    void read(bool debug);
+
+    /*
+     * function for reading in the CHGCAR file
+     */
+private:
+    void read_scalar(bool debug);
+    void read_matrix(bool debug);
+    void read_grid_dimensions(bool debug);
+    void read_grid(bool debug);
+    void read_atoms(bool debug);
+
+    /*
+     * output and handler functions
+     */
+public:
+    float get_value_interp(const float &x, const float &y, const float &z);
+
+    /*
+     * utility functions
+     */
+private:
+    float get_max_direction(const unsigned int &dim);
+    void calculate_inverse();
+
+    /*
+     * value extraction and dimensionality manipulators
+     */
+    const float& get_value(const unsigned int i,
                        const unsigned int j,
                        const unsigned int k) const;
-	XYZ grid_to_realspace(const double &i,
+    XYZ grid_to_realspace(const double &i,
                        const double &j,
                        const double &k) const;
-	XYZ realspace_to_grid(const double &i,
+    XYZ realspace_to_grid(const double &i,
                        const double &j,
                        const double &k) const;
-	~ScalarField();
-
-public:
-	void read_scalar(bool debug);
-	void read_matrix(bool debug);
-	void read_grid_dimensions(bool debug);
-	void read_grid(bool debug);
-	void read_atoms(bool debug);
-	//void read_coordinates();
-
-	float get_value_interp(const float &x, const float &y, const float &z);
-
-private:
-	float get_max_direction(const unsigned int &dim);
-	void calculate_inverse();
 };
 
 #endif

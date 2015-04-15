@@ -18,6 +18,19 @@
  *                                                                        *
  **************************************************************************/
 
+/*
+ * The Electron Density Plotter (EDP) projects the 3D electron density onto
+ * a 2D plane (i.e. a surface cut).
+ *
+ * The a program reads one or several CHGCAR files, performs elementwise
+ * some mathematical operations on the content and creates a memory object
+ * of the 3D scalar field.
+ *
+ * From this 3D scalar field, a surface cut is produced using a trilinear
+ * interpolation routine.
+ *
+ */
+
 #include <iostream>
 #include "mathtools.h"
 #include "unitcell.h"
@@ -27,13 +40,7 @@ int main() {
   std::cout << "Running EDP" << std::endl;
 
   ScalarField sf("CHGCAR");
-  sf.read_scalar(true);
-  sf.read_matrix(true);
-  sf.read_atoms(true);
-  sf.read_grid_dimensions(true);
-  sf.read_grid(true);
-  sf.output();
-//sf.get_value_interp(5.021,5.021,5.021);
+  sf.read(true);
 
   // create a canvas
   ColorScheme scheme(-10,10);
