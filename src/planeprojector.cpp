@@ -1,5 +1,5 @@
 /**************************************************************************
- *   edp.cpp                                                              *
+ *   planeprojector.cpp                                                   *
  *                                                                        *
  *   EDP                                                                  *
  *                                                                        *
@@ -18,47 +18,36 @@
  *                                                                        *
  **************************************************************************/
 
-/*
- * The Electron Density Plotter (EDP) projects the 3D electron density onto
- * a 2D plane (i.e. a surface cut).
- *
- * The a program reads one or several CHGCAR files, performs elementwise
- * some mathematical operations on the content and creates a memory object
- * of the 3D scalar field.
- *
- * From this 3D scalar field, a surface cut is produced using a trilinear
- * interpolation routine.
- *
- */
+ #include "planeprojector.h"
 
-#include <iostream>
-#include "mathtools.h"
-#include "scalar_field.h"
-#include "planeprojector.h"
 
-int main() {
-    std::cout << "Running EDP" << std::endl;
+PlaneProjector::PlaneProjector(ScalarField* _sf) {
+    this->scheme = new ColorScheme(-5,5);
+    this->sf = _sf;
+}
 
-    // read in field
-    ScalarField sf("CHGCAR");
-    sf.read(true);
+void PlaneProjector::plot(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj) {
 
-    // define vectors and start points
-    // vectors have to be normalized!
-    Vector v1(0,0,1);
-    Vector v2(1,0,0);
-    Vector s(3.52816,2.21444,15.4);
-    float scale = 100;
+    float _ix = int((hi - li) * _scale);
+    float _iy = int((hj - lj) * _scale);
 
-    // define intervals in Angstrom
-    float li = -3.5;
-    float hi = 3.5;
+    std::cout << "Creating " << _ix << "x" << _iy << "px image." << std::endl;
 
-    float lj = -3.5;
-    float hj = 3.5;
-
-    PlaneProjector pp(&sf);
-    pp.plot(v1, v2, s, scale, li, hi, lj, hj);
-
-    return 0;
+    // create a canvas
+    Plotter plt(_ix, _iy);
+    for(float i=0; i<_ix; i++) {
+        for(float j=0; j<_iy; j++) {
+          float x = _v1[0] * float(i - _ix / 2) / _scale + _v2[0] * float(j - _iy / 2) / _scale + _s[0];
+          float y = _v1[1] * float(i - _ix / 2) / _scale + _v2[1] * float(j - _iy / 2) / _scale + _s[1];
+          float z = _v1[2] * float(i - _ix / 2) / _scale + _v2[2] * float(j - _iy / 2) / _scale + _s[2];
+          float val = this->sf->get_value_interp(x,y,z);
+          // check if there is a real value
+          if(val == -1) {
+            plt.draw_filled_rectangle(i,j, 1, 1, Color(0,0,0));
+          } else {
+            plt.draw_filled_rectangle(i,j, 1, 1, this->scheme->get_color(val));
+          }
+        }
+    }
+    plt.write("test.png");
 }

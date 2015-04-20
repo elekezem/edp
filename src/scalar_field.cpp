@@ -89,7 +89,7 @@ void ScalarField::output() const {
  * void read(bool debug)
  *
  * Wrapper function that reads in the OUTCAR file
- * 
+ *
  * Usage: sf.read(true);
  *
  * Currently, only VASP4 output is being supported!
@@ -105,7 +105,7 @@ void ScalarField::read(bool debug) {
 /*
  * void read_scalar(bool debug)
  *
- * Read the scalar value from the 2nd line of the 
+ * Read the scalar value from the 2nd line of the
  * CHGCAR file. Note that all read_* functions can
  * be used seperately, although they may depend
  * on each other and have to be used in some
@@ -148,7 +148,7 @@ void ScalarField::read_matrix(bool debug) {
   for(unsigned int i=0; i<2; i++) { // discard first two lines
     std::getline(infile, line);
   }
-  
+
   // setup match pattern
   pcrecpp::RE re("^\\s*([0-9.-]+)\\s+([0-9.-]+)\\s+([0-9.-]+)\\s*$");
   for(unsigned int i=0; i<3; i++) {
@@ -217,9 +217,16 @@ void ScalarField::read_grid_dimensions(bool debug) {
   if(debug) std::cout << "Reading grid dimensions...\t\t";
   std::ifstream infile(this->filename.c_str());
   std::string line;
-  for(unsigned int i=0; i<7 + this->nrat.size() + 2; i++) {
+  // skip lines that contain atoms
+  for(unsigned int i=0; i<9; i++) {
     std::getline(infile, line);
   }
+  for(unsigned int i=0; i<this->nrat.size(); i++) {
+    for(unsigned int j=0; j<this->nrat[i]; j++) {
+        std::getline(infile, line);
+    }
+  }
+
   this->gridline = line;
 
   pcrecpp::RE re("([0-9]+)");
@@ -231,6 +238,9 @@ void ScalarField::read_grid_dimensions(bool debug) {
     i++;
   }
   if(debug) std::cout << "[Done]" << std::endl;
+  if(debug) std::cout << "GRID: " << this->grid_dimensions[0] << "x" <<
+                                     this->grid_dimensions[1] << "x" <<
+                                     this->grid_dimensions[2] << std::endl;
 }
 
 /*
@@ -252,8 +262,14 @@ void ScalarField::read_grid(bool debug) {
   if(debug) std::cout << "Reading grid values...";
   std::ifstream infile(this->filename.c_str());
   std::string line;
-  for(unsigned int i=0; i<7 + this->nrat.size() + 2; i++) {
+  // skip lines that contain atoms
+  for(unsigned int i=0; i<9; i++) {
     std::getline(infile, line);
+  }
+  for(unsigned int i=0; i<this->nrat.size(); i++) {
+    for(unsigned int j=0; j<this->nrat[i]; j++) {
+        std::getline(infile, line);
+    }
   }
 
   this->gridsize = this->grid_dimensions[0] * this->grid_dimensions[1]
@@ -266,10 +282,10 @@ void ScalarField::read_grid(bool debug) {
   unsigned int cur=0;         // for the counter
   unsigned int linecounter=0; // for the counter
   unsigned int wordcounter=0; // for the counter
-  pcrecpp::RE re("([0-9E.+-]+)");
+  pcrecpp::RE re("([0-9Ee.+-]+)");
   pcrecpp::RE aug("augmentation.*");
   while(std::getline(infile, line)) {
-    // stop looping when a second gridline appears (this 
+    // stop looping when a second gridline appears (this
     // is where the spin down part starts)
     if(line.compare(this->gridline) == 0) {
       std::cout << "I am breaking the loop" << std::endl;
@@ -283,18 +299,12 @@ void ScalarField::read_grid(bool debug) {
     pcrecpp::StringPiece input(line);
 
     wordcounter = 0;
+    if(i > this->gridsize) {
+        break;
+    }
     while(re.FindAndConsume(&input, &this->gridptr[i])) {
       i++;
       wordcounter++;
-    }
-
-    /*
-     * The input is being checked in such a way that it
-     * complies with a standard CHGCAR file.
-     */
-    if(wordcounter < 5) {
-      std::cout << "I think I am not reading a VASP CHGCAR file, I am stopping." << std::endl;
-      break;
     }
 
     /*
@@ -338,12 +348,12 @@ void ScalarField::read_grid(bool debug) {
  */
 float ScalarField::get_value_interp(const float &x, const float &y, const float &z) {
   if(x > this->get_max_direction(0) || y > this->get_max_direction(1) || z > this->get_max_direction(2)) {
-    return 0.0;
+    return -1.0;
   }
   if(x < 0 || y < 0 || z < 0) {
-    return 0.0;
+    return -1.0;
   }
-  
+
   // cast the input to the nearest grid point
   XYZ r = this->realspace_to_grid(x,y,z);
 

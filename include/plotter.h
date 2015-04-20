@@ -46,7 +46,7 @@ private:
   double low, high;
 public:
   ColorScheme(const double &_low, const double &_high);
-  Color get_color(const double &_value, bool logarithmic);
+  Color get_color(const double &_value);
 private:
   void construct_scheme();
   void convert_scheme();
@@ -65,18 +65,18 @@ public:
   Plotter(const unsigned int &_width, const unsigned int &_height);
   void set_background(const Color &_color);
   void write(const char* filename);
-  void draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop, 
+  void draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop,
                       const Color &_color);
-  void draw_empty_rectangle(float xstart, float ystart, float xstop, float ystop, 
+  void draw_empty_rectangle(float xstart, float ystart, float xstop, float ystop,
                       const Color &_color, float line_width);
-  void draw_line(float xstart, float ystart, float xstop, float ystop, 
+  void draw_line(float xstart, float ystart, float xstop, float ystop,
                  const Color &_color, float line_width);
-  void draw_filled_circle(float cx, float cy, float radius, 
+  void draw_filled_circle(float cx, float cy, float radius,
                           const Color &_color);
-  void draw_empty_circle(float cx, float cy, float radius, 
+  void draw_empty_circle(float cx, float cy, float radius,
                         const Color &_color, float line_width);
 private:
-  
+
 };
 
 #endif //_PLOTTER_H

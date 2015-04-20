@@ -45,7 +45,7 @@ void Plotter::set_background(const Color &_color) {
  * Draws a line. The position xstop and ystop are the ending positions of the line
  * and *not* the direction of the line.
  */
-void Plotter::draw_line(float xstart, float ystart, float xstop, float ystop, 
+void Plotter::draw_line(float xstart, float ystart, float xstop, float ystop,
                         const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_move_to(this->cr, xstart, ystart);
@@ -57,7 +57,7 @@ void Plotter::draw_line(float xstart, float ystart, float xstop, float ystop,
 /*
  * Create a filled rectangle. That is a rectangle without a border.
  */
-void Plotter::draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop, 
+void Plotter::draw_filled_rectangle(float xstart, float ystart, float xstop, float ystop,
                         const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_rectangle (this->cr, xstart, ystart, xstop, ystop);
@@ -67,7 +67,7 @@ void Plotter::draw_filled_rectangle(float xstart, float ystart, float xstop, flo
 /*
  * Create an empty rectangle. In other words, just the border of the rectangle.
  */
-void Plotter::draw_empty_rectangle(float xstart, float ystart, float xstop, float ystop, 
+void Plotter::draw_empty_rectangle(float xstart, float ystart, float xstop, float ystop,
                         const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_rectangle (this->cr, xstart, ystart, xstop, ystop);
@@ -78,7 +78,7 @@ void Plotter::draw_empty_rectangle(float xstart, float ystart, float xstop, floa
 /*
  * Create a filled circle. That is a circle without a border.
  */
-void Plotter::draw_filled_circle(float cx, float cy, float radius, 
+void Plotter::draw_filled_circle(float cx, float cy, float radius,
                           const Color &_color) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_arc(this->cr, cx, cy, radius, 0.0, 2 * M_PI);
@@ -88,7 +88,7 @@ void Plotter::draw_filled_circle(float cx, float cy, float radius,
 /*
  * Create an empty circle. In other words, just the border of the circle.
  */
-void Plotter::draw_empty_circle(float cx, float cy, float radius, 
+void Plotter::draw_empty_circle(float cx, float cy, float radius,
                           const Color &_color, float line_width) {
   cairo_set_source_rgb(this->cr, _color.get_r(), _color.get_g(), _color.get_b());
   cairo_arc(this->cr, cx, cy, radius, 0.0, 2 * M_PI);
@@ -180,19 +180,29 @@ Color ColorScheme::rgb2color(const std::string &_hex) {
  * Return a color by interpolation by supplying a value
  *
  */
-Color ColorScheme::get_color(const double &_value, bool logarithmic) {
-  if((logarithmic ? log(_value) : _value) > this->high) {
+Color ColorScheme::get_color(const double &_value) {
+
+  float value = 0;
+
+  if(_value > 1) {
+    value = log10(_value);
+  }
+  if(_value < -1) {
+    value = -log10(-_value);
+  }
+
+  if(value > this->high) {
     return this->colors.back();
   }
-  if((logarithmic ? log(_value) : _value) < this->low) {
+  if(value < this->low) {
     return this->colors.front();
   }
 
   float binsize = ((this->high - this->low)/(double)(this->colors.size()-1));
-  unsigned int bin = floor(((logarithmic ? log(_value) : _value) - this->low) / binsize);
+  unsigned int bin = floor((value - this->low) / binsize);
 
   // interpolate between the two colors
-  float residual = ((logarithmic ? log(_value) : _value) - this->low - (float)bin * binsize) / binsize;
+  float residual = (value - this->low - (float)bin * binsize) / binsize;
 
   float r = residual * this->colors[bin+1].get_r() + (1.0-residual) * this->colors[bin].get_r();
   float g = residual * this->colors[bin+1].get_g() + (1.0-residual) * this->colors[bin].get_g();

@@ -1,5 +1,5 @@
 /**************************************************************************
- *   edp.cpp                                                              *
+ *   planeprojector.h                                                     *
  *                                                                        *
  *   EDP                                                                  *
  *                                                                        *
@@ -18,47 +18,22 @@
  *                                                                        *
  **************************************************************************/
 
-/*
- * The Electron Density Plotter (EDP) projects the 3D electron density onto
- * a 2D plane (i.e. a surface cut).
- *
- * The a program reads one or several CHGCAR files, performs elementwise
- * some mathematical operations on the content and creates a memory object
- * of the 3D scalar field.
- *
- * From this 3D scalar field, a surface cut is produced using a trilinear
- * interpolation routine.
- *
- */
+#ifndef _PLANEPROJECTOR_H
+#define _PLANEPROJECTOR_H
 
-#include <iostream>
+#include <algorithm>
+#include "plotter.h"
 #include "mathtools.h"
 #include "scalar_field.h"
-#include "planeprojector.h"
 
-int main() {
-    std::cout << "Running EDP" << std::endl;
+class PlaneProjector {
+private:
+    ColorScheme* scheme;
+    ScalarField* sf;
+public:
+    PlaneProjector(ScalarField* _sf);
+    void plot(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj);
+private:
+};
 
-    // read in field
-    ScalarField sf("CHGCAR");
-    sf.read(true);
-
-    // define vectors and start points
-    // vectors have to be normalized!
-    Vector v1(0,0,1);
-    Vector v2(1,0,0);
-    Vector s(3.52816,2.21444,15.4);
-    float scale = 100;
-
-    // define intervals in Angstrom
-    float li = -3.5;
-    float hi = 3.5;
-
-    float lj = -3.5;
-    float hj = 3.5;
-
-    PlaneProjector pp(&sf);
-    pp.plot(v1, v2, s, scale, li, hi, lj, hj);
-
-    return 0;
-}
+#endif
