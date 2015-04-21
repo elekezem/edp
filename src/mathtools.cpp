@@ -52,6 +52,19 @@ const float& Vector::operator[](const unsigned int &i) const {
   return this->r[i];
 }
 
+float Vector::length() {
+    return sqrt(this->r[0] * this->r[0] +
+                this->r[1] * this->r[1] +
+                this->r[2] * this->r[2]);
+}
+
+void Vector::normalize() {
+    float length = this->length();
+    this->r[0] /= length;
+    this->r[1] /= length;
+    this->r[2] /= length;
+}
+
 /*
  * Default matrix constructor
  */

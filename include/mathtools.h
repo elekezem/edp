@@ -21,6 +21,8 @@
 #ifndef _MATHTOOLS_H
 #define _MATHTOOLS_H
 
+#include <cmath>
+
 /*
  * Vector class in 3D space
  */
@@ -32,6 +34,8 @@ public:
   Vector(float x, float y, float z);
   float operator[](const unsigned int &i);
   const float& operator[](const unsigned int &i) const;
+  float length();
+  void normalize();
 private:
 };
 

@@ -30,6 +30,10 @@ PlaneProjector::PlaneProjector(ScalarField* _sf, float _min, float _max) {
 
 void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj, bool negative_values) {
 
+    //only use normalized vectors
+    _v1.normalize();
+    _v2.normalize();
+
     this->ix = int((hi - li) * _scale);
     this->iy = int((hj - lj) * _scale);
 
