@@ -45,17 +45,17 @@ int main() {
 
     // define vectors and start points
     // vectors have to be normalized!
-    Vector v1(0,0,1);
-    Vector v2(1,0,0);
-    Vector s(3.52816,2.21444,15.4);
-    float scale = 200;
+    Vector v1(1,0,0);
+    Vector v2(0,0,1);
+    Vector s(1.5, 0, 1.5);
+    float scale = 100;
 
     // define intervals in Angstrom
-    float li = -5.0;
-    float hi = 5.0;
+    float li = -3.0;
+    float hi = 3.0;
 
-    float lj = -5.0;
-    float hj = 5.0;
+    float lj = -3.0;
+    float hj = 3.0;
 
     float color_interval = 5;
 

@@ -45,6 +45,7 @@ public:
     void write(std::string filename);
     ~PlaneProjector();
 private:
+    void cut_and_recast_plane();
     void draw_isoline(float val);
     bool is_crossing(const unsigned int &i, const unsigned int &j, const float &val);
 };

@@ -38,8 +38,6 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
     this->planegrid_log =  new float[this->ix * this->iy];
     this->planegrid_real =  new float[this->ix * this->iy];
 
-    // create a canvas
-    this->plt = new Plotter(this->ix, this->iy);
     for(int i=0; i<this->ix; i++) {
         for(int j=0; j<this->iy; j++) {
             float x = _v1[0] * float(i - this->ix / 2) / _scale + _v2[0] * float(j - this->iy / 2) / _scale + _s[0];
@@ -61,6 +59,7 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
         }
     }
 
+    this->cut_and_recast_plane();
     std::cout << "[Done]" << std::endl;
 }
 
@@ -103,7 +102,94 @@ bool PlaneProjector::is_crossing(const unsigned int &i, const unsigned int &j, c
     return false;
 }
 
+void PlaneProjector::cut_and_recast_plane() {
+    unsigned int min_x = 0;
+    unsigned int max_x = this->ix;
+    unsigned int min_y = 0;
+    unsigned int max_y = this->iy;
+
+    // determine min_x
+    for(unsigned int i=0; i<uint(this->ix); i++) {
+        bool line = false;
+        for(unsigned int j=0; j<uint(this->iy); j++) {
+            if(this->planegrid_real[(j) * this->ix + i] != 0.0) {
+                line = true;
+            }
+        }
+        if(line) {
+            min_x = i;
+            break;
+        }
+    }
+
+    // determine max_x
+    for(unsigned int i=uint(this->ix); i>0; i--) {
+        bool line = false;
+        for(unsigned int j=0; j<uint(this->iy); j++) {
+            if(this->planegrid_real[(j) * this->ix + i] != 0.0) {
+                line = true;
+            }
+        }
+        if(line) {
+            max_x = i;
+            break;
+        }
+    }
+
+    // determine min_y
+    for(unsigned int j=0; j<uint(this->iy); j++) {
+        bool line = false;
+        for(unsigned int i=0; i<uint(this->ix); i++) {
+            if(this->planegrid_real[(j) * this->ix + i] != 0.0) {
+                line = true;
+            }
+        }
+        if(line) {
+            min_y = j;
+            break;
+        }
+    }
+
+    // determine max_y
+    for(unsigned int j=uint(this->iy-1); j>0; j--) {
+        bool line = false;
+        for(unsigned int i=0; i<uint(this->ix); i++) {
+            if(this->planegrid_real[(j) * this->ix + i] != 0.0) {
+                line = true;
+            }
+        }
+        if(line) {
+            max_y = j;
+            break;
+        }
+    }
+
+    unsigned int nx = max_x - min_x;
+    unsigned int ny = max_y - min_y;
+
+    std::cout << "Recasing to [" << min_x << ":" << max_x
+              << " x [" << min_y << ":" << max_y << "]" << std::endl;
+
+    // recasting
+    float* newgrid_log = new float[nx * ny];
+    float* newgrid_real = new float[nx * ny];
+    for(unsigned int i=0; i<nx; i++) {
+        for(unsigned int j=0; j<ny; j++) {
+            newgrid_log[j * nx + i] = this->planegrid_log[(j + min_y) * this->ix + (i + min_x)];
+            newgrid_real[j * nx + i] = this->planegrid_real[(j + min_y) * this->ix + (i + min_x)];
+        }
+    }
+
+    delete[] this->planegrid_real;
+    delete[] this->planegrid_log;
+    this->planegrid_real = newgrid_real;
+    this->planegrid_log = newgrid_log;
+    this->ix = nx;
+    this->iy = ny;
+}
+
 void PlaneProjector::plot() {
+    this->plt = new Plotter(this->ix, this->iy);
     for(unsigned int i=0; i<uint(this->ix); i++) {
         for(unsigned int j=0; j<uint(this->iy); j++) {
             this->plt->draw_filled_rectangle(i,j, 1, 1,
