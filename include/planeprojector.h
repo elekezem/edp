@@ -30,10 +30,22 @@ class PlaneProjector {
 private:
     ColorScheme* scheme;
     ScalarField* sf;
+    Plotter* plt;
+
+    float* planegrid;
+    float min, max;
+
+    int ix, iy;
 public:
-    PlaneProjector(ScalarField* _sf);
-    void plot(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj);
+    PlaneProjector(ScalarField* _sf, float _min, float _max);
+    void extract(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj);
+    void plot();
+    void isolines(unsigned int bins);
+    void write(std::string filename);
+    ~PlaneProjector();
 private:
+    void draw_isoline(float val);
+    bool is_crossing(const unsigned int &i, const unsigned int &j, const float &val);
 };
 
 #endif

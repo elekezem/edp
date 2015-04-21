@@ -28,5 +28,5 @@
 *.app
 
 bin/*
-CHGCAR
+CHGCAR*
 test.png

@@ -182,27 +182,18 @@ Color ColorScheme::rgb2color(const std::string &_hex) {
  */
 Color ColorScheme::get_color(const double &_value) {
 
-  float value = 0;
-
-  if(_value > 1) {
-    value = log10(_value);
-  }
-  if(_value < -1) {
-    value = -log10(-_value);
-  }
-
-  if(value > this->high) {
+  if(_value > this->high) {
     return this->colors.back();
   }
-  if(value < this->low) {
+  if(_value < this->low) {
     return this->colors.front();
   }
 
   float binsize = ((this->high - this->low)/(double)(this->colors.size()-1));
-  unsigned int bin = floor((value - this->low) / binsize);
+  unsigned int bin = floor((_value - this->low) / binsize);
 
   // interpolate between the two colors
-  float residual = (value - this->low - (float)bin * binsize) / binsize;
+  float residual = (_value - this->low - (float)bin * binsize) / binsize;
 
   float r = residual * this->colors[bin+1].get_r() + (1.0-residual) * this->colors[bin].get_r();
   float g = residual * this->colors[bin+1].get_g() + (1.0-residual) * this->colors[bin].get_g();

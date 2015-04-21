@@ -348,10 +348,10 @@ void ScalarField::read_grid(bool debug) {
  */
 float ScalarField::get_value_interp(const float &x, const float &y, const float &z) {
   if(x > this->get_max_direction(0) || y > this->get_max_direction(1) || z > this->get_max_direction(2)) {
-    return -1.0;
+    return 0.0;
   }
   if(x < 0 || y < 0 || z < 0) {
-    return -1.0;
+    return 0.0;
   }
 
   // cast the input to the nearest grid point
