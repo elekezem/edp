@@ -89,6 +89,10 @@ int main(int argc, char *argv[]) {
         //**************************************
         std::cout << "Running EDP" << std::endl;
 
+        std::cout << "Lattice v1: " << v_in[0] << "," << v_in[1] << "," << v_in[2] << std::endl;
+        std::cout << "Lattice v2: " << w_in[0] << "," << w_in[1] << "," << w_in[2] << std::endl;
+        std::cout << "Start point: " << sp_in[0] << "," << sp_in[1] << "," << sp_in[2] << std::endl;
+
         // read in field
         ScalarField sf("CHGCAR");
         sf.read(true);

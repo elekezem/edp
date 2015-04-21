@@ -347,15 +347,22 @@ void ScalarField::read_grid(bool debug) {
  *
  */
 float ScalarField::get_value_interp(const float &x, const float &y, const float &z) {
-  if(x > this->get_max_direction(0) || y > this->get_max_direction(1) || z > this->get_max_direction(2)) {
-    return 0.0;
-  }
-  if(x < 0 || y < 0 || z < 0) {
-    return 0.0;
-  }
-
   // cast the input to the nearest grid point
   XYZ r = this->realspace_to_grid(x,y,z);
+  XYZ d = this->realspace_to_direct(x,y,z);
+
+  // to test whether the point is inside the box, we cast the point back
+  // to the direct grid and check if it is for each cartesian coordinate
+  // within the domain [0,1]
+  if(d.x < 0 || d.x > 1.0) {
+    return 0.0;
+  }
+  if(d.y < 0 || d.y > 1.0) {
+    return 0.0;
+  }
+  if(d.z < 0 || d.z > 1.0) {
+    return 0.0;
+  }
 
   // calculate value using trilinear interpolation
   float xd = remainderf(r.x, 1.0);
@@ -490,6 +497,23 @@ XYZ ScalarField::realspace_to_grid(const double &i,
   r.x *= float(this->grid_dimensions[0]-1);
   r.y *= float(this->grid_dimensions[1]-1);
   r.z *= float(this->grid_dimensions[2]-1);
+
+  return r;
+}
+
+/*
+ * XYZ realspace_to_direct(i,j,k)
+ *
+ * Convert 3d realspace vector to direct position.
+ *
+ */
+XYZ ScalarField::realspace_to_direct(const double &i,
+                     const double &j,
+                     const double &k) const {
+  XYZ r;
+  r.x = imat[0][0] * i + imat[0][1] * j + imat[0][2] * k;
+  r.y = imat[1][0] * i + imat[1][1] * j + imat[1][2] * k;
+  r.z = imat[2][0] * i + imat[2][1] * j + imat[2][2] * k;
 
   return r;
 }

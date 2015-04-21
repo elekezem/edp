@@ -28,7 +28,7 @@
 #include <sstream>
 #include <fstream>
 #include <pcrecpp.h>
-#include <math.h> 
+#include <math.h>
 #include "xyz.h"
 
 class ScalarField{
@@ -86,6 +86,9 @@ private:
                        const double &j,
                        const double &k) const;
     XYZ realspace_to_grid(const double &i,
+                       const double &j,
+                       const double &k) const;
+    XYZ realspace_to_direct(const double &i,
                        const double &j,
                        const double &k) const;
 };
