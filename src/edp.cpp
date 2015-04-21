@@ -45,9 +45,9 @@ int main() {
 
     // define vectors and start points
     // vectors have to be normalized!
-    Vector v1(1,0,0);
-    Vector v2(0,0,1);
-    Vector s(5,5,5);
+    Vector v1(0,0,1);
+    Vector v2(1,0,0);
+    Vector s(3.52816,2.21444,15.4);
     float scale = 200;
 
     // define intervals in Angstrom
@@ -57,10 +57,12 @@ int main() {
     float lj = -5.0;
     float hj = 5.0;
 
-    PlaneProjector pp(&sf, 0, 5);
-    pp.extract(v1, v2, s, scale, li, hi, lj, hj);
+    float color_interval = 5;
+
+    PlaneProjector pp(&sf, -color_interval, color_interval);
+    pp.extract(v1, v2, s, scale, li, hi, lj, hj, true);
     pp.plot();
-    pp.isolines(5);
+    pp.isolines(int(color_interval + 1)*2);
     pp.write("test.png");
 
     return 0;

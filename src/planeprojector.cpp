@@ -28,14 +28,15 @@ PlaneProjector::PlaneProjector(ScalarField* _sf, float _min, float _max) {
     this->sf = _sf;
 }
 
-void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj) {
+void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, float li, float hi, float lj, float hj, bool negative_values) {
 
     this->ix = int((hi - li) * _scale);
     this->iy = int((hj - lj) * _scale);
 
     std::cout << "Creating " << this->ix << "x" << this->iy << "px image...\t\t";
 
-    this->planegrid =  new float[this->ix * this->iy];
+    this->planegrid_log =  new float[this->ix * this->iy];
+    this->planegrid_real =  new float[this->ix * this->iy];
 
     // create a canvas
     this->plt = new Plotter(this->ix, this->iy);
@@ -44,7 +45,19 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
             float x = _v1[0] * float(i - this->ix / 2) / _scale + _v2[0] * float(j - this->iy / 2) / _scale + _s[0];
             float y = _v1[1] * float(i - this->ix / 2) / _scale + _v2[1] * float(j - this->iy / 2) / _scale + _s[1];
             float z = _v1[2] * float(i - this->ix / 2) / _scale + _v2[2] * float(j - this->iy / 2) / _scale + _s[2];
-            this->planegrid[j * this->ix + i] = log10(this->sf->get_value_interp(x,y,z));
+            float val = this->sf->get_value_interp(x,y,z);
+            if(negative_values) {
+                if(val < -10) {
+                    this->planegrid_log[j * this->ix + i] = -log10(-val);
+                } else if(val > 10) {
+                    this->planegrid_log[j * this->ix + i] = log10(val);
+                } else {
+                    this->planegrid_log[j * this->ix + i] = val / 10.0;
+                }
+            } else {
+                this->planegrid_log[j * this->ix + i] = log10(val);
+            }
+            this->planegrid_real[j * this->ix + i] = val;
         }
     }
 
@@ -54,8 +67,14 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
 void PlaneProjector::isolines(unsigned int bins) {
     float binsize = (this->max - this->min) / float(bins + 1);
     for(float val = this->min; val < this->max; val += binsize) {
-        this->draw_isoline(val);
+        if(val < -1) {
+            this->draw_isoline(-pow(10,-val));
+        }
+        if(val > 1) {
+            this->draw_isoline(pow(10,val));
+        }
     }
+    this->draw_isoline(0);
 }
 
 void PlaneProjector::draw_isoline(float val) {
@@ -69,16 +88,16 @@ void PlaneProjector::draw_isoline(float val) {
 }
 
 bool PlaneProjector::is_crossing(const unsigned int &i, const unsigned int &j, const float &val) {
-    if(this->planegrid[(j-1) * this->ix + (i)] < val && this->planegrid[(j+1) * this->ix + (i)] > val) {
+    if(this->planegrid_real[(j-1) * this->ix + (i)] < val && this->planegrid_real[(j+1) * this->ix + (i)] > val) {
         return true;
     }
-    if(this->planegrid[(j-1) * this->ix + (i)] > val && this->planegrid[(j+1) * this->ix + (i)] < val) {
+    if(this->planegrid_real[(j-1) * this->ix + (i)] > val && this->planegrid_real[(j+1) * this->ix + (i)] < val) {
         return true;
     }
-    if(this->planegrid[(j) * this->ix + (i-1)] > val && this->planegrid[(j) * this->ix + (i+1)] < val) {
+    if(this->planegrid_real[(j) * this->ix + (i-1)] > val && this->planegrid_real[(j) * this->ix + (i+1)] < val) {
         return true;
     }
-    if(this->planegrid[(j) * this->ix + (i-1)] < val && this->planegrid[(j) * this->ix + (i+1)] > val) {
+    if(this->planegrid_real[(j) * this->ix + (i-1)] < val && this->planegrid_real[(j) * this->ix + (i+1)] > val) {
         return true;
     }
     return false;
@@ -88,7 +107,7 @@ void PlaneProjector::plot() {
     for(unsigned int i=0; i<uint(this->ix); i++) {
         for(unsigned int j=0; j<uint(this->iy); j++) {
             this->plt->draw_filled_rectangle(i,j, 1, 1,
-                this->scheme->get_color(this->planegrid[j * this->ix + i]));
+                this->scheme->get_color(this->planegrid_log[j * this->ix + i]));
         }
     }
 }
@@ -98,5 +117,6 @@ void PlaneProjector::write(std::string filename) {
 }
 
 PlaneProjector::~PlaneProjector() {
-    delete[] this->planegrid;
+    delete[] this->planegrid_log;
+    delete[] this->planegrid_real;
 }
