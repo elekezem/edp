@@ -33,7 +33,7 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
     this->ix = int((hi - li) * _scale);
     this->iy = int((hj - lj) * _scale);
 
-    std::cout << "Creating " << this->ix << "x" << this->iy << "px image...\t\t";
+    std::cout << "Creating " << this->ix << "x" << this->iy << "px image..." << std::endl;
 
     this->planegrid_log =  new float[this->ix * this->iy];
     this->planegrid_real =  new float[this->ix * this->iy];
@@ -60,20 +60,26 @@ void PlaneProjector::extract(Vector _v1, Vector _v2, Vector _s, float _scale, fl
     }
 
     this->cut_and_recast_plane();
-    std::cout << "[Done]" << std::endl;
 }
 
-void PlaneProjector::isolines(unsigned int bins) {
+void PlaneProjector::isolines(unsigned int bins, bool negative_values) {
     float binsize = (this->max - this->min) / float(bins + 1);
-    for(float val = this->min; val < this->max; val += binsize) {
-        if(val < -1) {
-            this->draw_isoline(-pow(10,-val));
+    if(negative_values) {
+        for(float val = this->min; val < this->max; val += binsize) {
+            if(val < -1) {
+                this->draw_isoline(-pow(10,-val));
+            }
+            if(val > 1) {
+                this->draw_isoline(pow(10,val));
+            }
         }
-        if(val > 1) {
+        this->draw_isoline(0);
+    } else {
+        for(float val = this->min; val < this->max; val += binsize) {
             this->draw_isoline(pow(10,val));
         }
+        this->draw_isoline(0);
     }
-    this->draw_isoline(0);
 }
 
 void PlaneProjector::draw_isoline(float val) {
@@ -167,8 +173,8 @@ void PlaneProjector::cut_and_recast_plane() {
     unsigned int nx = max_x - min_x;
     unsigned int ny = max_y - min_y;
 
-    std::cout << "Recasing to [" << min_x << ":" << max_x
-              << " x [" << min_y << ":" << max_y << "]" << std::endl;
+    std::cout << "Recasting to [" << min_x << ":" << max_x
+              << "] x [" << min_y << ":" << max_y << "]" << std::endl;
 
     // recasting
     float* newgrid_log = new float[nx * ny];
@@ -200,6 +206,7 @@ void PlaneProjector::plot() {
 
 void PlaneProjector::write(std::string filename) {
     plt->write(filename.c_str());
+    std::cout << "Writing " << filename << std::endl;
 }
 
 PlaneProjector::~PlaneProjector() {
