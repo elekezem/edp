@@ -31,6 +31,7 @@
 ScalarField::ScalarField(const std::string &_filename) {
   this->filename = _filename;
   this->scalar = -1;
+  this->vasp5_input = false;
 }
 
 /*
@@ -92,14 +93,39 @@ void ScalarField::output() const {
  *
  * Usage: sf.read(true);
  *
- * Currently, only VASP4 output is being supported!
  */
 void ScalarField::read(bool debug) {
+  this->test_vasp5(debug);
   this->read_scalar(debug);
   this->read_matrix(debug);
   this->read_atoms(debug);
   this->read_grid_dimensions(debug);
   this->read_grid(debug);
+}
+
+/*
+ * void test_vasp5(bool debug)
+ *
+ * Test if the input file is a VASP5 output file
+ *
+ */
+void ScalarField::test_vasp5(bool debug) {
+  if(debug) std::cout << "Testing VASP version: ";
+  std::ifstream infile(this->filename.c_str());
+  std::string line;
+  for(unsigned int i=0; i<5; i++) { // discard first two lines
+    std::getline(infile, line);
+  }
+  std::getline(infile, line);
+  // check if this line contains atomic information (i.e. alpha-characters)
+  pcrecpp::RE re("^(.*[A-Za-z]+.*)$");
+  std::string ans;
+  if(re.FullMatch(line, &ans)) {
+    this->vasp5_input = true;
+    std::cout << "5" << std::endl;
+  } else {
+    std::cout << "4" << std::endl;
+  }
 }
 
 /*
@@ -186,7 +212,7 @@ void ScalarField::read_atoms(bool debug) {
   if(debug) std::cout << "Reading atoms...\t\t\t";
   std::ifstream infile(this->filename.c_str());
   std::string line;
-  for(unsigned int i=0; i<5; i++) { // discard first two lines
+  for(unsigned int i=0; i < (this->vasp5_input ? 6 : 5); i++) { // discard first two lines
     std::getline(infile, line);
   }
 
@@ -218,7 +244,7 @@ void ScalarField::read_grid_dimensions(bool debug) {
   std::ifstream infile(this->filename.c_str());
   std::string line;
   // skip lines that contain atoms
-  for(unsigned int i=0; i<9; i++) {
+  for(unsigned int i=0; i<(this->vasp5_input ? 10 : 9); i++) {
     std::getline(infile, line);
   }
   for(unsigned int i=0; i<this->nrat.size(); i++) {
@@ -263,7 +289,7 @@ void ScalarField::read_grid(bool debug) {
   std::ifstream infile(this->filename.c_str());
   std::string line;
   // skip lines that contain atoms
-  for(unsigned int i=0; i<9; i++) {
+  for(unsigned int i=0; i<(this->vasp5_input ? 10 : 9); i++) {
     std::getline(infile, line);
   }
   for(unsigned int i=0; i<this->nrat.size(); i++) {

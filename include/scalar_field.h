@@ -44,6 +44,7 @@ private:
     float* gridptr;  // grid to first pos of float array
     float* gridptr2; // grid to first pos of float array
     unsigned int gridsize;
+    bool vasp5_input;
 
 public:
     ScalarField(const std::string &_filename);
@@ -57,6 +58,7 @@ public:
      * function for reading in the CHGCAR file
      */
 private:
+    void test_vasp5(bool debug);
     void read_scalar(bool debug);
     void read_matrix(bool debug);
     void read_grid_dimensions(bool debug);

@@ -45,8 +45,8 @@ int main(int argc, char *argv[]) {
         //**************************************
         // declare values to be parsed
         //**************************************
-        TCLAP::ValueArg<std::string> arg_name("o","filename","Filename to print to",true,"test.png","string");
-        cmd.add(arg_name);
+        TCLAP::ValueArg<std::string> arg_output_filename("o","filename","Filename to print to",true,"test.png","string");
+        cmd.add(arg_output_filename);
         TCLAP::ValueArg<std::string> arg_sp("p","starting_point","Start point of cutting plane",true,"(0.5,0.5,0.5)","3d-vector");
         cmd.add(arg_sp);
         TCLAP::ValueArg<std::string> arg_v("v","vector1","Plane Vector 1",true,"(1,0,0)","3d-vector");
@@ -55,6 +55,8 @@ int main(int argc, char *argv[]) {
         cmd.add(arg_w);
         TCLAP::ValueArg<unsigned int> arg_s("s","scale","Scaling in px/angstrom",true, 200,"unsigned integer");
         cmd.add(arg_s);
+        TCLAP::ValueArg<std::string> arg_input_filename("i","input","Input file (i.e. CHGCAR)",true,"CHGCAR","filename");
+        cmd.add(arg_input_filename);
         TCLAP::SwitchArg arg_negative("n","negative_values","CHGCAR can contain negative values", cmd, false);
 
         cmd.parse(argc, argv);
@@ -62,7 +64,8 @@ int main(int argc, char *argv[]) {
         //**************************************
         // parsing values
         //**************************************
-        std::string filename = arg_name.getValue();
+        std::string input_filename = arg_input_filename.getValue();
+        std::string output_filename = arg_output_filename.getValue();
 
         pcrecpp::RE re("^([0-9.-]+),([0-9.-]+),([0-9.-]+)$");
         std::string sp = arg_sp.getValue();
@@ -94,7 +97,7 @@ int main(int argc, char *argv[]) {
         std::cout << "Start point: " << sp_in[0] << "," << sp_in[1] << "," << sp_in[2] << std::endl;
 
         // read in field
-        ScalarField sf("CHGCAR");
+        ScalarField sf(input_filename.c_str());
         sf.read(true);
 
         // define intervals in Angstrom
@@ -110,7 +113,7 @@ int main(int argc, char *argv[]) {
         pp.extract(v1, v2, s, scale, li, hi, lj, hj, negative_values);
         pp.plot();
         pp.isolines(int(color_interval + 1)*2, negative_values);
-        pp.write(filename);
+        pp.write(output_filename);
 
         return 0;
     } catch (TCLAP::ArgException &e) {
