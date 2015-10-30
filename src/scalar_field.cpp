@@ -496,9 +496,9 @@ XYZ ScalarField::grid_to_realspace(const double &i,
   float dz = (double)k / (double)grid_dimensions[2];
 
   XYZ r;
-  r.x = mat[0][0] * dx + mat[0][1] * dy + mat[0][2] * dz;
-  r.y = mat[1][0] * dx + mat[1][1] * dy + mat[1][2] * dz;
-  r.z = mat[2][0] * dx + mat[2][1] * dy + mat[2][2] * dz;
+  r.x = mat[0][0] * dx + mat[1][0] * dy + mat[2][0] * dz;
+  r.y = mat[0][1] * dx + mat[1][1] * dy + mat[2][1] * dz;
+  r.z = mat[0][2] * dx + mat[1][2] * dy + mat[2][2] * dz;
 
   return r;
 }
